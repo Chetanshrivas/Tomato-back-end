@@ -9,11 +9,16 @@ import orderRouter from "./routes/orderRoute.js";
 
 // app config ---------------------------------------------------------------------------------------
 const app = express();
-const port = 4000 ;
+const port = process.env.PORT || 4000;
 
 // middleware --------------------------------------------------------------------------------------
 app.use( express.json());
-app.use(cors()) ;
+app.use(cors(
+    {
+        origin : ["https://tomato-olive-three.vercel.app/", "http://localhost:5173"],
+        credentials : true
+    }
+)) ;
 
 // db connection -----------------------------------------------------------------------------------
 connectDB();
@@ -34,5 +39,3 @@ app.get( '/' , (req , res) =>{
 app.listen( port , ()=>{
     console.log(`server is running on the port ${port}`);
 })
-
-//mongodb+srv://atlas-sample-dataset-load-67ffdff7be691b69685b9891:<db_password>@cluster0.khvydux.mongodb.net/?
