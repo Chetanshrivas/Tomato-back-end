@@ -4,22 +4,23 @@ import fs from 'fs';
 
 // add food itmes ( this is our controller function)
 const addFood = async (req, res) => {
-    let image_filename = `${req.file.filename}` ;
-    const food  = new foodModel({
+    const food = new foodModel({
         name: req.body.name,
         description: req.body.description,       
         price: req.body.price,
-        category : req.body.category,
-        image: image_filename
+        category: req.body.category,
+        image: req.file.path  // ✅ Cloudinary gives back a URL here
     });
+
     try {
         await food.save();
-        res.json({success : true, message : "Food item added successfully"});
+        res.json({ success: true, message: "Food item added successfully" });
     } catch (error) {
-        console.log(error) ;
-        res.json( {success : false, message : "Failed to add food item"} );
+        console.error(error);
+        res.json({ success: false, message: "Failed to add food item" });
     }
 };
+
 
 // add all food list
 const listFood = async (req , res)=>{
@@ -34,18 +35,22 @@ const listFood = async (req , res)=>{
 };
 
 //remove food item 
-const removeFood = async (req , res)=>{
+const removeFood = async (req, res) => {
     try {
-        const food = await foodModel.findById(req.body.id) ;
-        fs.unlink(`uploads/${food.image}` ,()=>{}) ;
-        
-        await foodModel.findByIdAndDelete(req.body.id) ;
-        res.json({success : true, message : "Food item removed successfully"});
-        
+        const food = await foodModel.findById(req.body.id);
+
+         //Optionally delete from cloudinary using:
+         //const publicId = extractPublicId(food.image);
+         //await cloudinary.uploader.destroy(publicId);
+
+        await foodModel.findByIdAndDelete(req.body.id);
+        res.json({ success: true, message: "Food item removed successfully" });
+
     } catch (error) {
         console.log(error);
-        res.json({ success : false, message : "Failed to remove food item" });
+        res.json({ success: false, message: "Failed to remove food item" });
     }
 };
+
 
 export { addFood , listFood , removeFood } ;
